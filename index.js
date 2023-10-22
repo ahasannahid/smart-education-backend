@@ -14,19 +14,22 @@ app.use(express.json());
 
 
 
-const URI = "mongodb://127.0.0.1:27017";
+// const URI = "mongodb://127.0.0.1:27017";
+const uri = "mongodb+srv://smartedu:IM9irzCSDKqG3Jgf@cluster0.qbh9oi5.mongodb.net/?retryWrites=true&w=majority"
 // console.log(uri); //mongodb://localhost:27017/smart-education
-const client = new MongoClient(URI, { useNewUrlParser: true});
+const client = new MongoClient(uri, { useNewUrlParser: true});
 
 async function run() {
     try {
         const activitiesCollection = client.db('smart-education').collection('activities');
         const chapterCollection = client.db('smart-education').collection('chapter');
+        // const teacherChapterCollection = client.db('smart-education').collection('tracherChapter');
         const classMaterialCollection = client.db('smart-education').collection('class-material');
         const groupActivitiesCollection = client.db('smart-education').collection('group-activities');
         const repositoryCollection = client.db('smart-education').collection('repository');
         const resourcesCollection = client.db('smart-education').collection('resources');
         const singleActivitiesCollection = client.db('smart-education').collection('single-activities');
+        const amarJiggasaCollection = client.db('smart-education').collection('amrjiggasa');
 
         app.get('/activities', async (req, res) => {
             const query = {};
@@ -39,6 +42,12 @@ async function run() {
             const chapter = await chapterCollection.find(query).toArray();
             res.send(chapter);
         });
+
+        // app.get('/teacherChapter', async (req, res) => {
+        //     const query = {};
+        //     const chapter = await teacherChapterCollection.find(query).toArray();
+        //     res.send(chapter);
+        // });
 
         app.get('/class-material', async (req, res) => {
             const query = {};
@@ -110,20 +119,100 @@ async function run() {
         });
 
 
+        app.get('/activities/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const activities = await activitiesCollection.findOne(query);
+            res.send(activities);
+        });
+
+
+        app.get('/repository/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await repositoryCollection.findOne(query);
+            res.send(result);
+        })
+
+
+        
+        
+        
+        app.put('/activities/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const number = req.body.number;
+            const comments = req.body.comments;
+            const option = {upsert: true};
+            const update = {
+                $set: {
+                    number: number,
+                    comments: comments
+                }
+            }
+            
+            const result = await activitiesCollection.updateOne(filter, update, option);
+            res.send(result);
+        })  
+
+
+        app.put('/repository/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const answer = req.body.answer;
+            const option = {upsert: true};
+            const updateAnswer = {
+                $set: {
+                    answer: answer
+                }
+            }
+            const result = await repositoryCollection.updateOne(filter, updateAnswer, option);
+            res.send(result);
+        })  
 
 
 
-        // app.post('/users', async (req, res) => {
-        //     const user = req.body;
-        //     // console.log(user);
-        //     const result = await usersCollection.insertOne(user);
-        //     res.send(result);
-        // });
+        app.get('/amarjiggasa', async (req, res) => {
+            const query = {};
+            const amarJiggasa = await amarJiggasaCollection.find(query).toArray();
+            res.send(amarJiggasa);
+        });
 
-       
+        app.get('/amarjiggasa/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const amarjiggasa = await amarJiggasaCollection.findOne(query);
+            res.send(amarjiggasa);
+        });
 
-       
+
+        app.put('/amarjiggasa/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const answer = req.body.answer;
+            const option = {upsert: true};
+            const updateAnswer = {
+                $set: {
+                    answer: answer
+                }
+            }
+            const result = await amarJiggasaCollection.updateOne(filter, updateAnswer, option);
+            res.send(result);
+        }) 
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
     finally {
 
     }
