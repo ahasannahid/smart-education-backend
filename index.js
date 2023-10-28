@@ -87,6 +87,7 @@ async function run() {
             const result = await activitiesCollection.insertOne(activity);
             res.send(result);
         });
+
         app.post('/chapter',  async(req, res) => {
             const chapter = req.body;
             const result = await chapterCollection.insertOne(chapter);
@@ -119,24 +120,22 @@ async function run() {
         });
 
 
+
+
+
+
+
+
+
+
+
         app.get('/activities/:id', async (req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
             const activities = await activitiesCollection.findOne(query);
             res.send(activities);
         });
-
-
-        app.get('/repository/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = {_id: ObjectId(id)};
-            const result = await repositoryCollection.findOne(query);
-            res.send(result);
-        })
-
-
-        
-        
+       
         
         app.put('/activities/:id', async(req, res) => {
             const id = req.params.id;
@@ -155,6 +154,32 @@ async function run() {
             res.send(result);
         })  
 
+
+
+        app.put('/activitiesStudent/:id', async(req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const number = Math.floor(Math.random() * 6) + 5;
+            const answer = req.body.answer;
+            const option = {upsert: true};
+            const update = {
+                $set: {
+                    number: number,
+                    answer: answer
+                }
+            }
+            
+            const result = await activitiesCollection.updateOne(filter, update, option);
+            res.send(result);
+        })  
+
+
+        app.get('/repository/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await repositoryCollection.findOne(query);
+            res.send(result);
+        })
 
         app.put('/repository/:id', async(req, res) => {
             const id = req.params.id;
